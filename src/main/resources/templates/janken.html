@@ -7,8 +7,18 @@
 </head>
 
 <body>
+  <h1>じゃんけんゲーム</h1>
   <div th:if="${name}">
     Hi [[${name}]]
+  </div>
+  <p>手を選んでください</p>
+  <a th:href="@{/jankengame(hand='グー')}">グー</a>
+  <a th:href="@{/jankengame(hand='チョキ')}">チョキ</a>
+  <a th:href="@{/jankengame(hand='パー')}">パー</a>
+  <div th:if="${result}">
+    <p>あなたの手：[[${playerHand}]]</p>
+    <p>相手の手：[[${cpuHand}]]</p>
+    <p>結果：[[${result}]]</p>
   </div>
 </body>
 
