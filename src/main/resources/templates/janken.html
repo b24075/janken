@@ -20,6 +20,14 @@
     <p>相手の手：[[${cpuHand}]]</p>
     <p>結果：[[${result}]]</p>
   </div>
+
+  <h1>Hi! [[${login_user}]]</h1>
+  <h2>エントリー</h2>
+  <ol>
+    <li th:each="user : ${entry.users}">[[${user}]]</li>
+  </ol>
+
+  <div><a href="/logout">ログアウト</a></div>
 </body>
 
 </html>
