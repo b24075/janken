@@ -28,6 +28,12 @@
   </ol>
 
   <div><a href="/logout">ログアウト</a></div>
+
+  <a href="/janken">エントリー</a>
+  <ul>
+    <li th:each="user : ${users}">[[${user.userName}]]</li>
+  </ul>
+  <P>
 </body>
 
 </html>
