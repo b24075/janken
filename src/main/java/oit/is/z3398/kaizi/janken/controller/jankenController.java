@@ -7,11 +7,9 @@ import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import oit.is.z3398.kaizi.janken.model.Janken;
-import oit.is.z3398.kaizi.janken.model.UserMapper;
-import oit.is.z3398.kaizi.janken.model.Entry;
 import org.springframework.ui.ModelMap;
-import oit.is.z3398.kaizi.janken.model.User;
+import org.springframework.web.bind.annotation.RequestParam;
+import oit.is.z3398.kaizi.janken.model.*;
 
 @Controller
 public class JankenController {
@@ -21,6 +19,9 @@ public class JankenController {
   @Autowired
   private UserMapper userMapper;
 
+  @Autowired
+  private MatchMapper matchMapper;
+
   @GetMapping("/janken")
   public String janken(Principal prin, ModelMap model) {
     String loginUser = prin.getName();
@@ -28,9 +29,12 @@ public class JankenController {
     model.addAttribute("entry", this.entry);
 
     ArrayList<User> users = userMapper.selectAllByUserName();
-
     model.addAttribute("users", users);
+
+    ArrayList<Match> matches = matchMapper.selectAllMatches();
+    model.addAttribute("matches", matches);
 
     return "janken.html";
   }
+
 }
