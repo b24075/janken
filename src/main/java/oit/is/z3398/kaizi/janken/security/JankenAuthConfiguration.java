@@ -31,7 +31,12 @@ public class JankenAuthConfiguration {
             .logoutSuccessUrl("/")) // ログアウト後に / にリダイレクト
         .authorizeHttpRequests(authz -> authz
             .requestMatchers("/janken/**").authenticated() // /sample3/以下は認証済みであること
-            .anyRequest().permitAll());
+            .anyRequest().permitAll())
+        .csrf(csrf -> csrf
+            .ignoringRequestMatchers("/h2-console/*", "/janken*/**"))
+        .headers(headers -> headers
+            .frameOptions(frameOptions -> frameOptions
+                .sameOrigin()));
     return http.build();
   }
 
