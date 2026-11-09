@@ -21,6 +21,7 @@ public class Janken {
     } else {
       this.result = "負け"; // チョキ vs グー
     }
+    
   }
 
   public String getPlayerHand() {
