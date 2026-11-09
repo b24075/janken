@@ -20,6 +20,15 @@
   </ul>
   <P>
 
+  <h2>アクティブな試合</h2>
+  <div th:each="mi : ${activeMatches}">
+    <p>
+      ID: [[${mi.id}]]
+      user1：[[${mi.user1}]]
+      user2：[[${mi.user2}]]
+    </p>
+  </div>
+
   <h2>試合結果</h2>
   <div th:each="match : ${matches}">
     <p>
