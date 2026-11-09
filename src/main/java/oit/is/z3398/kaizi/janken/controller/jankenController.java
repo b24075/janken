@@ -98,12 +98,30 @@ public class JankenController {
       Principal prin, ModelMap model) {
     User me = userMapper.selectByName(prin.getName());
 
-    MatchInfo matchInfo = new MatchInfo();
-    matchInfo.setUser1(me.getId());
-    matchInfo.setUser2(id);
-    matchInfo.setUser1Hand(hand);
-    matchInfo.setIsActive(true);
-    matchInfoMapper.insertMatchInfo(matchInfo);
+    // 相手(id)が自分(me)を指名して待っているか確認
+    MatchInfo waiting = matchInfoMapper.selectActiveMatchInfo(id, me.getId());
+
+    if (waiting == null) {
+      // 自分が先手:task2 と同じく matchinfo に登録して待機
+      MatchInfo matchInfo = new MatchInfo();
+      matchInfo.setUser1(me.getId());
+      matchInfo.setUser2(id);
+      matchInfo.setUser1Hand(hand);
+      matchInfo.setIsActive(true);
+      matchInfoMapper.insertMatchInfo(matchInfo);
+    } else {
+      // 自分が後手:試合成立 → matches に結果を登録
+      Match match = new Match();
+      match.setUser1(waiting.getUser1()); // 先手(相手)の id
+      match.setUser2(me.getId()); // 後手(自分)の id
+      match.setUser1Hand(waiting.getUser1Hand()); // 先手の手
+      match.setUser2Hand(hand); // 自分の手
+      match.setIsActive(true);
+      matchMapper.insertMatch(match);
+
+      // 待機状態を解除
+      matchInfoMapper.updateIsActiveFalse(waiting.getId());
+    }
 
     model.addAttribute("loginUser", prin.getName());
     return "wait.html";
