@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestParam;
 import oit.is.z3398.kaizi.janken.model.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import oit.is.z3398.kaizi.janken.service.AsyncKekka;
 
 @Controller
 public class JankenController {
@@ -24,6 +26,9 @@ public class JankenController {
 
   @Autowired
   private MatchInfoMapper matchInfoMapper;
+
+  @Autowired
+  private AsyncKekka asyncKekka;
 
   @GetMapping("/janken")
   public String janken(Principal prin, ModelMap model) {
@@ -110,21 +115,31 @@ public class JankenController {
       matchInfo.setIsActive(true);
       matchInfoMapper.insertMatchInfo(matchInfo);
     } else {
-      // 自分が後手:試合成立 → matches に結果を登録
       Match match = new Match();
-      match.setUser1(waiting.getUser1()); // 先手(相手)の id
-      match.setUser2(me.getId()); // 後手(自分)の id
-      match.setUser1Hand(waiting.getUser1Hand()); // 先手の手
-      match.setUser2Hand(hand); // 自分の手
+      match.setUser1(waiting.getUser1());
+      match.setUser2(me.getId());
+      match.setUser1Hand(waiting.getUser1Hand());
+      match.setUser2Hand(hand);
       match.setIsActive(true);
-      matchMapper.insertMatch(match);
+      asyncKekka.syncInsertMatch(match); // ← matchMapper.insertMatch から変更
 
-      // 待機状態を解除
       matchInfoMapper.updateIsActiveFalse(waiting.getId());
+
+      // 後手はその場で結果を表示
+      model.addAttribute("kekka", match);
+      model.addAttribute("result", judge(hand, waiting.getUser1Hand()));
     }
 
     model.addAttribute("loginUser", prin.getName());
     return "wait.html";
+  }
+
+  @GetMapping("/kekka")
+  public SseEmitter kekka(Principal prin) {
+    User me = userMapper.selectByName(prin.getName());
+    final SseEmitter emitter = new SseEmitter();
+    asyncKekka.asyncShowKekka(emitter, me.getId());
+    return emitter;
   }
 
 }

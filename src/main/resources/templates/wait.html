@@ -4,12 +4,50 @@
 <head>
   <meta charset="utf-8">
   <title>wait</title>
+  <script>
+    window.onload = function () {
+      // 待機中の画面のときだけ SSE に接続する
+      if (!document.getElementById("waiting")) return;
+
+      var sse = new EventSource('/kekka');
+      sse.onmessage = function (event) {
+        var match = JSON.parse(event.data);
+        document.getElementById("waiting").style.display = "none";
+        document.getElementById("result").innerHTML =
+          "<p>あなたの手：" + match.user1Hand + "</p>" +
+          "<p>相手の手：" + match.user2Hand + "</p>" +
+          "<p>結果：" + judge(match.user1Hand, match.user2Hand) + "</p>" +
+          '<a href="/janken">戻る</a>';
+        sse.close();   // 自動再接続を止める
+      };
+    };
+
+    function judge(my, other) {
+      if (my === other) return "Draw";
+      if ((my === "Gu" && other === "Choki") ||
+        (my === "Choki" && other === "Pa") ||
+        (my === "Pa" && other === "Gu")) return "You Win!";
+      return "You Lose";
+    }
+  </script>
 </head>
 
 <body>
   <p>Hi [[${loginUser}]]</p>
-  <p>相手の手を待ってます</p>
-  <a href="/janken">もどる</a>
+
+  <!-- 後手:その場で結果を表示 -->
+  <div th:if="${kekka}">
+    <p>あなたの手：[[${kekka.user2Hand}]]</p>
+    <p>相手の手：[[${kekka.user1Hand}]]</p>
+    <p>結果：[[${result}]]</p>
+    <a href="/janken">戻る</a>
+  </div>
+
+  <!-- 先手:SSE で結果が届くのを待つ -->
+  <div th:unless="${kekka}">
+    <p id="waiting">相手の手を待ってます</p>
+    <div id="result"></div>
+  </div>
 </body>
 
 </html>
