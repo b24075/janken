@@ -1,1 +1,26 @@
-じゃんけんゲーム
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>janken game</title>
+</head>
+
+<body>
+  <h1>Match</h1>
+
+  <p>手を選んでください</p>
+  <a th:href="@{/fight(hand='Gu', id=${user.id})}">グー</a>
+  <a th:href="@{/fight(hand='Choki', id=${user.id})}">チョキ</a>
+  <a th:href="@{/fight(hand='Pa', id=${user.id})}">パー</a>
+  <div th:if="${result}">
+    <p>あなたの手：[[${myHand}]]</p>
+    <p>相手の手：[[${cpuHand}]]</p>
+    <p>結果：[[${result}]]</p>
+  </div>
+
+  <p>
+    <a href="/janken">もどる</a>
+  </p>
+
+</html>
