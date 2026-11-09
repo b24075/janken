@@ -23,15 +23,9 @@
 
   <h1>Hi! [[${login_user}]]</h1>
   <h2>エントリー</h2>
-  <ol>
-    <li th:each="user : ${entry.users}">[[${user}]]</li>
-  </ol>
 
-  <div><a href="/logout">ログアウト</a></div>
-
-  <a href="/janken">エントリー</a>
   <ul>
-    <li th:each="user : ${users}">[[${user.userName}]]</li>
+    <li th:each="user : ${users}"><a th:href="@{/match(id=${user.id})}"> [[${user.userName}]]</a></li>
   </ul>
   <P>
 
@@ -45,6 +39,8 @@
       user2の手：[[${match.user2Hand}]]
     </p>
   </div>
+
+  <div><a href="/logout">ログアウト</a></div>
 </body>
 
 </html>
