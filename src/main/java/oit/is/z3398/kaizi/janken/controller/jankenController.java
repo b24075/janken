@@ -37,4 +37,9 @@ public class JankenController {
     return "janken.html";
   }
 
+  @GetMapping("/match")
+  public String moveMatch() {
+    return "match.html";
+  }
+
 }
